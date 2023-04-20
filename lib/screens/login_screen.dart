@@ -23,38 +23,30 @@ class _LoginScreenState extends State<LoginScreen> {
       onTap: () => _uidFocusNode.unfocus(),
       child: Scaffold(
         backgroundColor: CustomColors.firebaseNavy,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.only(
-              left: 16.0,
-              right: 16.0,
-              bottom: 20.0,
-            ),
+        body: SingleChildScrollView(
+          child: Container(
             child: Column(
-              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(height: 20),
-                      Text(
-                        'Participacion',
-                        style: TextStyle(
-                          color: CustomColors.firebaseYellow,
-                          fontSize: 40,
-                        ),
-                      ),
-                      Text(
-                        'Ciudadana',
-                        style: TextStyle(
-                          color: CustomColors.firebaseOrange,
-                          fontSize: 40,
-                        ),
-                      ),
-                    ],
+                SizedBox(height: 20),
+                SafeArea(
+                    child: Container(
+                  height: 100,
+                  width: 100,
+                )),
+                Text(
+                  'Participacion',
+                  style: TextStyle(
+                    color: CustomColors.firebaseYellow,
+                    fontSize: 40,
+                  ),
+                ),
+                Text(
+                  'Ciudadana',
+                  style: TextStyle(
+                    color: CustomColors.firebaseOrange,
+                    fontSize: 40,
                   ),
                 ),
                 FutureBuilder(

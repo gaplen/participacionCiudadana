@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutterfire_samples/res/custom_colors.dart';
-import 'package:flutterfire_samples/screens/add_screen.dart';
+import 'package:flutterfire_samples/screens/escuelas/modulos/comite%20de%20bienestar/comite_de_bienestar_page.dart';
+import 'package:flutterfire_samples/screens/escuelas/modulos/comite%20de%20ejecucion/comite_de_ejecucion_page.dart';
+import 'package:flutterfire_samples/screens/escuelas/modulos/comite%20de%20vigilancia/comite_de_vigilancia_page.dart';
+import 'package:flutterfire_samples/screens/escuelas/modulos/registroEscuela/add_screen.dart';
 
 class ModulosPage extends StatefulWidget {
   // const ModulosPage({super.key});
@@ -81,12 +84,12 @@ class _ModulosPageState extends State<ModulosPage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => ComiteEjecucion(),
-                      //   ),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ComiteEjecucion(),
+                        ),
+                      );
                     },
                     child: Container(
                         height: size.height * 0.18,
@@ -105,12 +108,12 @@ class _ModulosPageState extends State<ModulosPage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => ComitevigilanciaPage(),
-                      //   ),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ComitevigilanciaPage(),
+                        ),
+                      );
                     },
                     child: Container(
                         height: size.height * 0.18,
@@ -129,11 +132,11 @@ class _ModulosPageState extends State<ModulosPage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      //    Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //       builder: (context) => ComiteBienestar()),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ComiteBienestar()),
+                      );
                     },
                     child: Container(
                         height: size.height * 0.18,

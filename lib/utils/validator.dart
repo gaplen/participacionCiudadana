@@ -7,10 +7,10 @@ class Validator {
     return null;
   }
 
-  static String? validateUserID({required String uid}) {
-    if (uid.isEmpty) {
-      return 'User ID can\'t be empty';
-    } else if (uid.length <= 3) {
+  static String? validateUserID({required String user}) {
+    if (user.isEmpty) {
+      return 'El correo electronico no puede estar vacio';
+    } else if (user.length <= 3) {
       return 'User ID should be greater than 3 characters';
     }
 

@@ -22,8 +22,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutterfire_samples/screens/dashboard_screen.dart';
+import 'package:flutterfire_samples/screens/home_screen.dart';
 import 'package:flutterfire_samples/screens/login_screen.dart';
 import 'package:flutterfire_samples/screens/register_screen.dart';
+import 'package:flutterfire_samples/services/products_service.dart';
 import 'package:flutterfire_samples/utils/auth_service.dart';
 import 'package:provider/provider.dart';
 
@@ -35,7 +37,7 @@ class AppState extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthService()),
-        // ChangeNotifierProvider(create: ( _ ) => ProductsService() ),
+        ChangeNotifierProvider(create: (_) => ProductsService()),
       ],
       child: MyApp(),
     );
@@ -52,10 +54,12 @@ class MyApp extends StatelessWidget {
       routes: {
         // 'checking': ( _ ) => CheckAuthScreen(),
 
-        'home': (_) => DashboardScreen(),
+        'home': (_) => HomeScreen(),
+        // DashboardScreen(),
         // 'product' : ( _ ) => ProductScreen(),
 
         'login': (_) => LoginScreen(),
+        // LoginScreen(),
         'register': (_) => RegisterScreen(),
       },
       // scaffoldMessengerKey: NotificationsService.messengerKey,

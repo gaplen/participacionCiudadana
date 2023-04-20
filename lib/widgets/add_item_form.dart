@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_samples/res/custom_colors.dart';
 import 'package:flutterfire_samples/utils/database.dart';
-import 'package:flutterfire_samples/utils/estados_list_suggestions.dart';
 import 'package:flutterfire_samples/utils/validator.dart';
 import 'package:intl/intl.dart';
 

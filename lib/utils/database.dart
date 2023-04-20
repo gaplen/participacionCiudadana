@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 final CollectionReference _mainCollection =
     _firestore.collection('participacionciudadana');
 
+FirebaseFirestore firestore = FirebaseFirestore.instance;
+CollectionReference users = firestore.collection('users');
+
 class Database {
-  static String? userUid;
+  static String? user;
 
   static Future<void> addItem({
     String? fecha,
@@ -23,7 +27,7 @@ class Database {
     String? telefono,
   }) async {
     DocumentReference documentReferencer =
-        _mainCollection.doc(userUid).collection('escuelas').doc();
+        _mainCollection.doc(user).collection('escuelas').doc();
 
     Map<String, dynamic> data = <String, dynamic>{
       "fecha": fecha,
@@ -64,7 +68,7 @@ class Database {
     required String docId,
   }) async {
     DocumentReference documentReferencer =
-        _mainCollection.doc(userUid).collection('escuelas').doc(docId);
+        _mainCollection.doc(user).collection('escuelas').doc(docId);
 
     Map<String, dynamic> data = <String, dynamic>{
       "fecha": fecha,
@@ -90,7 +94,7 @@ class Database {
 
   static Stream<QuerySnapshot> readItems() {
     CollectionReference notesItemCollection =
-        _mainCollection.doc(userUid).collection('escuelas');
+        _mainCollection.doc(user).collection('escuelas');
 
     return notesItemCollection.snapshots();
   }
@@ -99,11 +103,146 @@ class Database {
     required String docId,
   }) async {
     DocumentReference documentReferencer =
-        _mainCollection.doc(userUid).collection('escuelas').doc(docId);
+        _mainCollection.doc(user).collection('escuelas').doc(docId);
 
     await documentReferencer
         .delete()
         .whenComplete(() => print('Note item deleted from the database'))
         .catchError((e) => print(e));
+  }
+
+///////////additemejecucion
+  ///
+  static Future<void> addItemEjecucion({
+    String? puesto,
+    String? nombre,
+    String? aPaterno,
+    String? aMaterno,
+    String? phone,
+    String? curp,
+    String? calle,
+    String? numero,
+    String? colonia,
+    String? cp,
+    String? municipio,
+  }) async {
+    DocumentReference documentReferencer =
+        _mainCollection.doc(user).collection('comiteejecucion').doc();
+
+    Map<String, dynamic> data = <String, dynamic>{
+      "puesto": puesto,
+      "nombre": nombre,
+      "aPaterno": aPaterno,
+      "aMaterno": aMaterno,
+      "phone": phone,
+      "curp": curp,
+      "numero": numero,
+      "calle": calle,
+      "colonia": colonia,
+      "cp": cp,
+      "municipio": municipio,
+    };
+
+    await documentReferencer
+        .set(data)
+        .whenComplete(() => print("Note item added to the database"))
+        .catchError((e) => print(e));
+  }
+
+  static Stream<QuerySnapshot> readItemsEjecucion() {
+    CollectionReference notesItemCollection =
+        _mainCollection.doc(user).collection('comiteejecucion');
+
+    return notesItemCollection.snapshots();
+  }
+
+  //////////// add item bienestar
+
+  static Future<void> addItemBienestar({
+    String? puesto,
+    String? nombre,
+    String? aPaterno,
+    String? aMaterno,
+    String? phone,
+    String? curp,
+    String? calle,
+    String? numero,
+    String? colonia,
+    String? cp,
+    String? municipio,
+  }) async {
+    DocumentReference documentReferencer =
+        _mainCollection.doc(user).collection('comitebienestar').doc();
+
+    Map<String, dynamic> data = <String, dynamic>{
+      "puesto": puesto,
+      "nombre": nombre,
+      "aPaterno": aPaterno,
+      "aMaterno": aMaterno,
+      "phone": phone,
+      "curp": curp,
+      "numero": numero,
+      "calle": calle,
+      "colonia": colonia,
+      "cp": cp,
+      "municipio": municipio,
+    };
+
+    await documentReferencer
+        .set(data)
+        .whenComplete(() => print("Note item added to the database"))
+        .catchError((e) => print(e));
+  }
+
+  static Stream<QuerySnapshot> readItemsBienestar() {
+    CollectionReference notesItemCollection =
+        _mainCollection.doc(user).collection('comitebienestar');
+
+    return notesItemCollection.snapshots();
+  }
+
+///// add item vigilancia
+
+  static Future<void> addItemVigilancia({
+    String? puesto,
+    String? nombre,
+    String? aPaterno,
+    String? aMaterno,
+    String? phone,
+    String? curp,
+    String? calle,
+    String? numero,
+    String? colonia,
+    String? cp,
+    String? municipio,
+  }) async {
+    DocumentReference documentReferencer =
+        _mainCollection.doc(user).collection('comitevigilancia').doc();
+
+    Map<String, dynamic> data = <String, dynamic>{
+      "puesto": puesto,
+      "nombre": nombre,
+      "aPaterno": aPaterno,
+      "aMaterno": aMaterno,
+      "phone": phone,
+      "curp": curp,
+      "numero": numero,
+      "calle": calle,
+      "colonia": colonia,
+      "cp": cp,
+      "municipio": municipio,
+    };
+
+    await documentReferencer
+        .set(data)
+        .whenComplete(() => print("Note item added to the database"))
+        .catchError((e) => print(e));
+  }
+
+  static Stream<QuerySnapshot> readItemsVigilancia() {
+    CollectionReference notesItemCollection =
+        _mainCollection.doc(user).collection('comitevigilancia');
+
+    return notesItemCollection.snapshots();
   }
 }

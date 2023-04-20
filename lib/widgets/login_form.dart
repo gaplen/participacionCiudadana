@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutterfire_samples/res/custom_colors.dart';
 import 'package:flutterfire_samples/screens/dashboard_screen.dart';
+import 'package:flutterfire_samples/utils/authentication_with_google.dart';
 import 'package:flutterfire_samples/utils/database.dart';
 import 'package:flutterfire_samples/utils/validator.dart';
-
-import 'custom_form_field.dart';
+import 'package:flutterfire_samples/widgets/google_sign_in_button.dart';
 
 class LoginForm extends StatefulWidget {
   final FocusNode focusNode;
@@ -18,10 +18,8 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final TextEditingController _uidController = TextEditingController();
-
+  final TextEditingController _userController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
   final _loginInFormKey = GlobalKey<FormState>();
 
   @override
@@ -34,24 +32,64 @@ class _LoginFormState extends State<LoginForm> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: CustomFormField(
-                  controller: _uidController,
-                  focusNode: widget.focusNode,
-                  keyboardType: TextInputType.text,
-                  inputAction: TextInputAction.done,
-                  validator: (value) => Validator.validateUserID(
-                    uid: value,
+                child: TextFormField(
+                  validator: (value) =>
+                      Validator.validateUserID(user: _userController.text),
+                  // obscureText: true,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.done,
+                  controller: _userController,
+                  decoration: InputDecoration(
+                    label: Text('Correo Electronico'),
+                    hintText: 'Ingresa tu correo electronico',
+
+                    // labelText: isLabelEnabled ? _label : null,
+                    labelStyle: TextStyle(color: CustomColors.firebaseYellow),
+
+                    hintStyle: TextStyle(
+                      color: CustomColors.firebaseGrey.withOpacity(0.5),
+                    ),
+                    errorStyle: TextStyle(
+                      color: Colors.redAccent,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: CustomColors.firebaseAmber,
+                        width: 2,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: CustomColors.firebaseGrey.withOpacity(0.5),
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: Colors.redAccent,
+                        width: 2,
+                      ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: Colors.redAccent,
+                        width: 2,
+                      ),
+                    ),
                   ),
-                  label: 'Correo electronico',
-                  hint: 'Ingresa tu correo electronico',
                 ),
               ),
               SizedBox(height: 10),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.0),
                 child: TextFormField(
                   validator: (value) => Validator.validatePassword(
-                      password: _passwordController.text),
+                    password: _passwordController.text,
+                  ),
                   obscureText: true,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.done,
@@ -99,25 +137,8 @@ class _LoginFormState extends State<LoginForm> {
                     ),
                   ),
                 ),
-              )
-              // Padding(
-              //   padding: const EdgeInsets.all(10.0),
-              //   child: CustomFormField(
-              //     // controller: _passwordController,
-              //     focusNode: widget.focusNode,
-              //     keyboardType: TextInputType.text,
-              //     inputAction: TextInputAction.done,
-              //     validator: (value) => Validator.validatePassword(
-              //       uid: value,
-              //     ),
-              //     label: 'User ID',
-              //     hint: 'Ingresa tu ID',
-              //   ),
-              // ),
-              ,
-              SizedBox(
-                height: 10,
               ),
+              SizedBox(height: 10),
               GestureDetector(
                 onTap: () {
                   Navigator.pushNamed(context, 'register');
@@ -130,47 +151,59 @@ class _LoginFormState extends State<LoginForm> {
             ],
           ),
           SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Container(
-              width: double.maxFinite,
-              child: ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    CustomColors.firebaseOrange,
-                  ),
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+          FutureBuilder(
+            future: Authentication.initializeFirebase(context: context),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Text('Error initializing Firebase');
+              } else if (snapshot.connectionState == ConnectionState.done) {
+                return GoogleSignInButton();
+              }
+              return CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  CustomColors.firebaseOrange,
+                ),
+              );
+            },
+          ),
+          Container(
+            // width: double.maxFinite,
+            child: ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(
+                  CustomColors.firebaseOrange,
+                ),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                onPressed: () {
-                  widget.focusNode.unfocus();
-                  widget.focusNode.unfocus();
+              ),
+              onPressed: () {
+                widget.focusNode.unfocus();
+                widget.focusNode.unfocus();
 
-                  if (_loginInFormKey.currentState!.validate()) {
-                    // Database.userUid = _passwordController.text;
-                    Database.userUid = _uidController.text;
+                if (_loginInFormKey.currentState!.validate()) {
+                  // Database.user = _passwordController.text;
+                  Database.user = _userController.text;
 
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        // aki kambiar ruta
-                        builder: (context) => DashboardScreen(),
-                      ),
-                    );
-                  }
-                },
-                child: Padding(
-                  padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
-                  child: Text(
-                    'Ingresar',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: CustomColors.firebaseGrey,
-                      letterSpacing: 2,
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      // aki kambiar ruta
+                      builder: (context) => DashboardScreen(),
                     ),
+                  );
+                }
+              },
+              child: Padding(
+                padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
+                child: Text(
+                  'Ingresar',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: CustomColors.firebaseGrey,
+                    letterSpacing: 2,
                   ),
                 ),
               ),
