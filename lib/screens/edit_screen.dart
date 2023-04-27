@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutterfire_samples/res/custom_colors.dart';
-import 'package:flutterfire_samples/utils/database.dart';
 import 'package:flutterfire_samples/widgets/app_bar_title.dart';
 import 'package:flutterfire_samples/widgets/edit_item_form.dart';
 

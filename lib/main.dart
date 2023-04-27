@@ -1,47 +1,15 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutterfire_samples/screens/login_screen.dart';
-
-// void main() {
-//   runApp(MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'myapp',
-//       debugShowCheckedModeBanner: false,
-//       theme: ThemeData(
-//         primarySwatch: Colors.indigo,
-//         brightness: Brightness.dark,
-//       ),
-//       home: LoginScreen(),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
-import 'package:flutterfire_samples/screens/dashboard_screen.dart';
-import 'package:flutterfire_samples/screens/home_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutterfire_samples/screens/inicial_page.dart';
 import 'package:flutterfire_samples/screens/login_screen.dart';
-import 'package:flutterfire_samples/screens/register_screen.dart';
-import 'package:flutterfire_samples/services/products_service.dart';
-import 'package:flutterfire_samples/utils/auth_service.dart';
-import 'package:provider/provider.dart';
+import 'package:flutterfire_samples/screens/splash_screen.dart';
 
-void main() => runApp(AppState());
+void main() async {
+  // Inicializa Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 
-class AppState extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthService()),
-        ChangeNotifierProvider(create: (_) => ProductsService()),
-      ],
-      child: MyApp(),
-    );
-  }
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -49,26 +17,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Productos App',
-      initialRoute: 'login',
-      routes: {
-        // 'checking': ( _ ) => CheckAuthScreen(),
-
-        'home': (_) => HomeScreen(),
-        // DashboardScreen(),
-        // 'product' : ( _ ) => ProductScreen(),
-
-        'login': (_) => LoginScreen(),
-        // LoginScreen(),
-        'register': (_) => RegisterScreen(),
-      },
-      // scaffoldMessengerKey: NotificationsService.messengerKey,
-      // theme: ThemeData.light().copyWith(
-      //   scaffoldBackgroundColor: Colors.grey[300],
-      //   appBarTheme: AppBarTheme(elevation: 0, color: Colors.indigo),
-      //   floatingActionButtonTheme: FloatingActionButtonThemeData(
-      //       backgroundColor: Colors.indigo, elevation: 0),
+      title: 'Participacion Ciudadana',
+      // theme: ThemeData(
+      //   primarySwatch: Colors.blue,
       // ),
+      // Configura las rutas de navegación de la aplicación
+      initialRoute: '/splash',
+      routes: {
+        // '/': (context) => ProfileScreen(),
+        // 'register': (context) => RegisterScreen(),
+        '/splash': (context) => SplashScreen(),
+        '/inicio': (context) => InicioPage(),
+        '/login': (context) => LoginScreen(),
+        // '/profile': (context) => ProfileScreen(),
+      },
     );
   }
 }

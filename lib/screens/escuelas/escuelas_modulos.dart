@@ -139,11 +139,11 @@ class _ModulosPageState extends State<ModulosPage> {
                       );
                     },
                     child: Container(
-                        height: size.height * 0.18,
-                        width: size.width * 0.40,
-                        color: Colors.red,
-                        child: Center(
-                            child: Column(
+                      height: size.height * 0.18,
+                      width: size.width * 0.40,
+                      color: Colors.red,
+                      child: Center(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -151,7 +151,9 @@ class _ModulosPageState extends State<ModulosPage> {
                             SizedBox(height: 5),
                             Text('Comite de bienestar'),
                           ],
-                        ))),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),

@@ -2,8 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-final CollectionReference _mainCollection =
-    _firestore.collection('participacionciudadana');
+final CollectionReference _mainCollection = _firestore.collection('myapp');
 
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 CollectionReference users = firestore.collection('users');
@@ -242,6 +241,67 @@ class Database {
   static Stream<QuerySnapshot> readItemsVigilancia() {
     CollectionReference notesItemCollection =
         _mainCollection.doc(user).collection('comitevigilancia');
+
+    return notesItemCollection.snapshots();
+  }
+
+  ////add user
+  ///
+  static Future<void> addItemUser({
+    String? nombre,
+    String? apellido,
+    String? telefono,
+  }) async {
+    DocumentReference documentReferencer =
+        _mainCollection.doc(user).collection('datosUsuario').doc();
+
+    Map<String, dynamic> data = <String, dynamic>{
+      "nombre": nombre,
+      "apellido": apellido,
+      "telefono": telefono,
+    };
+
+    await documentReferencer
+        .set(data)
+        .whenComplete(() => print("Note item added to the database"))
+        .catchError((e) => print(e));
+  }
+
+  ///read data users
+  ///
+  static Stream<QuerySnapshot> readItemsUsers() {
+    CollectionReference notesItemCollection =
+        _mainCollection.doc(user).collection('datosUsuario');
+
+    return notesItemCollection.snapshots();
+  }
+
+  /// add conntactos
+  ///
+  static Future<void> addContacto({
+    String? nombre,
+    required String? nombreEscuela,
+    String? telefono,
+  }) async {
+    DocumentReference documentReferencer =
+        _mainCollection.doc(user).collection('contactos').doc();
+
+    Map<String, dynamic> data = <String, dynamic>{
+      "nombre": nombre,
+      "nombreEscuela": nombreEscuela,
+      "telefono": telefono,
+    };
+
+    await documentReferencer
+        .set(data)
+        .whenComplete(() => print("Note item added to the database"))
+        .catchError((e) => print(e));
+  }
+
+  ///////////read contactos
+  static Stream<QuerySnapshot> readContactos() {
+    CollectionReference notesItemCollection =
+        _mainCollection.doc(user).collection('contactos');
 
     return notesItemCollection.snapshots();
   }

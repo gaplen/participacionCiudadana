@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_samples/res/custom_colors.dart';
 import 'package:flutterfire_samples/utils/database.dart';
@@ -596,6 +595,12 @@ class _AddItemFormState extends State<AddItemForm> {
                             telefono: _telefonoController.text,
                             // title: _titleController.text,
                             // description: _descriptionController.text,
+                          );
+
+                          await Database.addContacto(
+                            nombre: _nombrecontactoController.text,
+                            nombreEscuela: _nombreEscuelaController.text,
+                            telefono: _telefonoController.text,
                           );
 
                           setState(() {

@@ -24,49 +24,57 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         backgroundColor: CustomColors.firebaseNavy,
         body: SingleChildScrollView(
-          child: Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(height: 20),
-                SafeArea(
-                    child: Container(
-                  height: 100,
-                  width: 100,
-                )),
-                Text(
-                  'Participacion',
-                  style: TextStyle(
-                    color: CustomColors.firebaseYellow,
-                    fontSize: 40,
+          child: Stack(
+            children: [
+              Positioned(
+                right: 0,
+                top: 0,
+                left: 0,
+                bottom: 200,
+                child: Container(
+                  // height: 100,
+                  // width: 100,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xFF720DBA),
+                        Color(0xFF5D0CAF),
+                        Color(0xFF470A9D),
+                        Color(0xFF2D066E),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.only(
+                      // topLeft: Radius.circular(10),
+                      // topRight: Radius.circular(10),
+                      bottomLeft: Radius.circular(30),
+                      bottomRight: Radius.circular(30),
+                    ),
                   ),
                 ),
-                Text(
-                  'Ciudadana',
-                  style: TextStyle(
-                    color: CustomColors.firebaseOrange,
-                    fontSize: 40,
+              ),
+              Column(
+                children: [
+                  FutureBuilder(
+                    future: _initializeFirebase(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Text('Error initializing Firebase');
+                      } else if (snapshot.connectionState ==
+                          ConnectionState.done) {
+                        return LoginForm(focusNode: _uidFocusNode);
+                      }
+                      return CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          CustomColors.firebaseOrange,
+                        ),
+                      );
+                    },
                   ),
-                ),
-                FutureBuilder(
-                  future: _initializeFirebase(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Text('Error initializing Firebase');
-                    } else if (snapshot.connectionState ==
-                        ConnectionState.done) {
-                      return LoginForm(focusNode: _uidFocusNode);
-                    }
-                    return CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        CustomColors.firebaseOrange,
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

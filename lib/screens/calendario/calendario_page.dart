@@ -1,198 +1,201 @@
-// // import 'package:flutter/material.dart';
+import 'dart:collection';
 
-// // class CalendarioPage extends StatefulWidget {
-// //   // const CalendarioPage({super.key});
-
-// //   @override
-// //   State<CalendarioPage> createState() => _CalendarioPageState();
-// // }
-
-// // class _CalendarioPageState extends State<CalendarioPage> {
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return Scaffold(
-// //       appBar: AppBar(
-// //         title: Text('Calendario page'),
-// //       ),
-// //     );
-// //   }
-// // }
-// // //
-
-// import 'package:flutter/material.dart';
-// import 'package:flutterfire_samples/res/custom_colors.dart';
-// import 'package:table_calendar/table_calendar.dart';
-
-// class CalendarioScreen extends StatefulWidget {
-//   const CalendarioScreen({Key? key}) : super(key: key);
-
-//   @override
-//   State<CalendarioScreen> createState() => _CalendarioScreenState();
-// }
-
-// class _CalendarioScreenState extends State<CalendarioScreen> {
-//   CalendarFormat _calendarFormat = CalendarFormat.month;
-//   DateTime _focusedDay = DateTime.now();
-//   DateTime? _selectedDay;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Calendario'),
-//         backgroundColor: CustomColors.firebaseNavy,
-//       ),
-//       body: TableCalendar(
-//         firstDay: DateTime.utc(2000, 1, 1),
-//         lastDay: DateTime.now().add(const Duration(days: 300)),
-//         focusedDay: _focusedDay,
-//         calendarFormat: _calendarFormat,
-//         selectedDayPredicate: (day) {
-//           return isSameDay(_selectedDay, day);
-//         },
-//         onDaySelected: (selectedDay, focusedDay) {
-//           if (!isSameDay(_selectedDay, selectedDay)) {
-//             // Se llama el setState cuando se actualiza el día seleccionado
-//             setState(() {
-//               _selectedDay = selectedDay;
-//               _focusedDay = focusedDay;
-//             });
-//           }
-//         },
-//         onFormatChanged: (format) {
-//           if (_calendarFormat != format) {
-//             // Se llama el setState cuando se actualiza el formato del mes
-//             setState(() {
-//               _calendarFormat = format;
-//             });
-//           }
-//         },
-//         onPageChanged: (focusedDay) {
-//           _focusedDay = focusedDay;
-//         },
-//       ),
-//     );
-//   }
-// }
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfire_samples/models/event.dart';
+import 'package:flutterfire_samples/screens/calendario/add_event.dart';
+import 'package:flutterfire_samples/screens/calendario/edit_event.dart';
+import 'package:flutterfire_samples/widgets/event_item.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class CitasPage extends StatefulWidget {
-  const CitasPage({Key? key}) : super(key: key);
+class CaledarioPage extends StatefulWidget {
+  // const CaledarioPage({super.key});
 
   @override
-  _CitasPageState createState() => _CitasPageState();
+  State<CaledarioPage> createState() => _CaledarioPageState();
 }
 
-class _CitasPageState extends State<CitasPage> {
-  // CitaService citaService = CitaService();
-
+class _CaledarioPageState extends State<CaledarioPage> {
   late DateTime _focusedDay;
+  late DateTime _firstDay;
+  late DateTime _lastDay;
   late DateTime _selectedDay;
-  late bool expanded;
-  Map<String, int> appts = Map<String, int>();
+  late CalendarFormat _calendarFormat;
+  late Map<DateTime, List<Event>> _events;
+
+  int getHashCode(DateTime key) {
+    return key.day * 1000000 + key.month * 10000 + key.year;
+  }
 
   @override
   void initState() {
     super.initState();
+    _events = LinkedHashMap(
+      equals: isSameDay,
+      hashCode: getHashCode,
+    );
     _focusedDay = DateTime.now();
+    _firstDay = DateTime.now().subtract(const Duration(days: 1000));
+    _lastDay = DateTime.now().add(const Duration(days: 1000));
     _selectedDay = DateTime.now();
-    expanded = false;
-    if (appts.isEmpty) {
-      // loadAppts(_selectedDay);
-    }
+    _calendarFormat = CalendarFormat.month;
+    _loadFirestoreEvents();
   }
 
-  // Future loadAppts(DateTime from) async {
-  //   appts.addAll(await citaService.getApptsCount(from: from));
-  //   setState(() {});
-  // }
+  _loadFirestoreEvents() async {
+    final firstDay = DateTime(_focusedDay.year, _focusedDay.month, 1);
+    final lastDay = DateTime(_focusedDay.year, _focusedDay.month + 1, 0);
+    _events = {};
+
+    final snap = await FirebaseFirestore.instance
+        .collection('events')
+        .where('date', isGreaterThanOrEqualTo: firstDay)
+        .where('date', isLessThanOrEqualTo: lastDay)
+        .withConverter(
+            fromFirestore: Event.fromFirestore,
+            toFirestore: (event, options) => event.toFirestore())
+        .get();
+    for (var doc in snap.docs) {
+      final event = doc.data();
+      final day = DateTime.utc(
+        event.date.year,
+        event.date.month,
+        event.date.day,
+      );
+      if (_events[day] == null) {
+        _events[day] = [];
+      }
+      _events[day]!.add(event);
+    }
+    setState(() {});
+  }
+
+  List<Event> _getEventsForTheDay(DateTime day) {
+    return _events[day] ?? [];
+  }
 
   @override
   Widget build(BuildContext context) {
-    var count = 2;
-    if (MediaQuery.of(context).size.width < 700) {
-      count = 1;
-    }
-
     return Scaffold(
-      appBar: AppBar(),
-      body: GridView.count(
-        crossAxisCount: count,
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text('Mi Calendario'),
+        backgroundColor: Colors.purple.shade200,
+      ),
+      body: ListView(
         children: [
           TableCalendar(
-            // locale: 'es_ES',
-            headerStyle:
-                HeaderStyle(titleCentered: true, formatButtonVisible: false),
-            selectedDayPredicate: (day) => _selectedDay == day,
-            onDaySelected: (selectedDay, focusedDay) {
+            eventLoader: _getEventsForTheDay,
+            calendarFormat: _calendarFormat,
+            onFormatChanged: (format) {
               setState(() {
-                _focusedDay = focusedDay;
-                _selectedDay = selectedDay;
+                _calendarFormat = format;
               });
             },
             focusedDay: _focusedDay,
-            firstDay: DateTime.now(),
-            lastDay: DateTime.now().add(Duration(days: 300)),
-            calendarBuilders: CalendarBuilders(
-              todayBuilder: (context, day, focusedDay) => Center(
-                child: Text(day.day.toString()),
-              ),
-              markerBuilder: (context, day, events) {
-                var key = "${day.day}/${day.month}/${day.year}";
-                var count = appts.containsKey(key) ? appts[key] : 0;
-
-                if (count == 0) {
-                  return null;
-                }
-
-                return Align(
-                  alignment: Alignment.bottomRight,
-                  child: Container(
-                    width: 20,
-                    height: 20,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle, color: Colors.cyan),
-                    child: Text(
-                      count.toString(),
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                );
-              },
-            ),
-            onPageChanged: (focusedDay) async {
-              _focusedDay = focusedDay;
-              // await loadAppts(focusedDay);
+            firstDay: _firstDay,
+            lastDay: _lastDay,
+            onPageChanged: (focusedDay) {
+              setState(() {
+                _focusedDay = focusedDay;
+              });
+              _loadFirestoreEvents();
             },
+            selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+            onDaySelected: (selectedDay, focusedDay) {
+              print(_events[selectedDay]);
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+              });
+            },
+            calendarStyle: const CalendarStyle(
+              weekendTextStyle: TextStyle(
+                color: Colors.red,
+              ),
+              selectedDecoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.purple,
+              ),
+            ),
+            // calendarBuilders: CalendarBuilders(
+            //   headerTitleBuilder: (context, day) {
+            //     return Container(
+            //       color: Colors.purple,
+            //       padding: const EdgeInsets.all(8.0),
+            //       // child: Text(day.toString()),
+            //     );
+            //   },
+            // ),
           ),
-          Column(
-            children: [
-              TextButton(
-                  onPressed: () {
-                    setState(() {
-                      expanded = !expanded;
-                    });
-                  },
-                  child: Text("Agregar Cita")),
-              // Visibility(
-              //     visible: expanded,
-              //     child: CitaForm(
-              //       day: _selectedDay,
-              //       refreshDay: () {
-              //         setState(() {});
-              //       },
-              //     )),
-              // Expanded(
-              //   child: CitaList(
-              //     day: _selectedDay,
-              //   ),
-              // ),
-            ],
-          )
+          ..._getEventsForTheDay(_selectedDay).map(
+            (event) => Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.purple.shade200,
+                  ),
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                child: EventItem(
+                    event: event,
+                    onDelete: () async {
+                      final delete = await showDialog<bool>(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          title: const Text("Eliminar Eveto?"),
+                          content: const Text(
+                              "Realmente quiere eliminar este evento?"),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.red,
+                              ),
+                              child: const Text("No"),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.green,
+                              ),
+                              child: const Text("Yes"),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (delete ?? false) {
+                        await FirebaseFirestore.instance
+                            .collection('events')
+                            .doc(event.id)
+                            .delete();
+                        _loadFirestoreEvents();
+                      }
+                    }),
+              ),
+            ),
+          ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.purple.shade200,
+        onPressed: () async {
+          final result = await Navigator.push<bool>(
+            context,
+            MaterialPageRoute(
+              builder: (_) => AddEvent(
+                firstDate: _firstDay,
+                lastDate: _lastDay,
+                selectedDate: _selectedDay,
+              ),
+            ),
+          );
+          if (result ?? false) {
+            _loadFirestoreEvents();
+          }
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

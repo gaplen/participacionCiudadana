@@ -139,7 +139,7 @@ class CustomFormFieldDos extends StatelessWidget {
           isCapitalized ? TextCapitalization.words : TextCapitalization.none,
       textInputAction: _inputAction,
       cursorColor: CustomColors.firebaseYellow,
-      validator: (value) => _validator(value!),
+      // validator: (value) => _validator(value!),
       decoration: InputDecoration(
         labelText: isLabelEnabled ? _label : null,
         labelStyle: TextStyle(color: CustomColors.firebaseYellow),
